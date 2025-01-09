@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guess the Country Game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        /* Center the buttons and add some margin */
+        .navigation-buttons {
+            margin-top: 50px;
+        }
+        .navigation-buttons form,
+        .navigation-buttons a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body class="container mt-5 text-center">
+    <h1>Your country is: <span class="text-primary">{{ country }}</span></h1>
+    <!-- Form for Back and Restart buttons -->
+    <div class="navigation-buttons">
+        <form method="POST" action="{{ url_for('game') }}">
+            <button type="submit" name="answer" value="BACK" class="btn btn-secondary btn-lg">Back</button>
+        </form>
+        <a href="{{ url_for('restart') }}" class="btn btn-primary btn-lg">Restart</a>
+    </div>
+</body>
+</html>
