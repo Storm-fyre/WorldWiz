@@ -337,98 +337,98 @@ In geographical sense, is your country in the Americas or Europe?
                                                                     NO:Hungary
                                                             NO:Poland
 
-                            NO:
-                                Is your country a former Yugoslav Republic?
-                                    YES:
-                                        Is your nation in NATO?
-                                            YES:
-                                                Is your nation landlocked?
-                                                    YES:North Macedonia
-                                                    NO:Montenegro
-                                            NO:
-                                                Is your nation landlocked?
-                                                    YES:Serbia
-                                                    NO:Bosnia and Herzegovina
                                     NO:
-                                        Is your nation landlocked(No coastline)?
+                                        Is your country a former Yugoslav Republic?
                                             YES:
-                                                Is your country a presidential republic?
-                                                    YES:Belarus
-                                                    NO:Moldova
-                                            NO:
-                                                Does your country have Black Sea coast?
-                                                    YES:Ukraine
-                                                    NO:Albania
-                    NO:
-                        Is your country in European Union(EU)?
-                            YES:
-                                Is your country a monarchy?
-                                    YES:
-                                        Is your country a scandinavian country?
-                                            YES:
-                                                Does your country share border with just one country?
-                                                    YES:Denmark
-                                                    NO:Sweden
-                                            NO:
-                                                Is your country a landlocked country?
-                                                    YES:Luxembourg
-                                                    NO:
-                                                         Does your country border France?
-                                                            YES:Belgium
-                                                            NO:Netherlands
-                                    NO:
-                                        Does your country directly controled any oversee colonies?
-                                            YES:
-                                                Does your country have a Mediterraean coast?
+                                                Is your nation in NATO?
                                                     YES:
-                                                        Is your country nuclear armed?
-                                                            YES:France
-                                                            NO:Italy
+                                                        Is your nation landlocked?
+                                                            YES:North Macedonia
+                                                            NO:Montenegro
                                                     NO:
+                                                        Is your nation landlocked?
+                                                            YES:Serbia
+                                                            NO:Bosnia and Herzegovina
+                                            NO:
+                                                Is your nation landlocked(No coastline)?
+                                                    YES:
+                                                        Is your country a presidential republic?
+                                                            YES:Belarus
+                                                            NO:Moldova
+                                                    NO:
+                                                        Does your country have Black Sea coast?
+                                                            YES:Ukraine
+                                                            NO:Albania
+                            NO:
+                                Is your country in European Union(EU)?
+                                    YES:
+                                        Is your country a monarchy?
+                                            YES:
+                                                Is your country a scandinavian country?
+                                                    YES:
                                                         Does your country share border with just one country?
-                                                            YES:Portugal
-                                                            NO:Germany
-                                            NO:
-                                                Is your country a member of NATO?
-                                                    YES:
-                                                        Does your country have mediterraean coast?
-                                                            YES:Greece
-                                                            NO:Finland
+                                                            YES:Denmark
+                                                            NO:Sweden
                                                     NO:
-                                                        Is english the official language of your country?
-                                                            YES:
-                                                                Does your country share border with any other country?
-                                                                    YES:Ireland
-                                                                    NO:Malta
+                                                        Is your country a landlocked country?
+                                                            YES:Luxembourg
                                                             NO:
-                                                                Is your country landlocked?
-                                                                    YES:Austria
-                                                                    NO:Cyprus
-                            NO:
-                                Is your country landlocked?
-                                    YES:
-                                        Is your country entirely enclaved by a single other country?
-                                            YES:
-                                                Is your country the seat of Pope?
-                                                    YES:Vatican City
-                                                    NO:San Marino
+                                                                 Does your country border France?
+                                                                    YES:Belgium
+                                                                    NO:Netherlands
                                             NO:
-                                                Is your nation considered a micro-nation?
+                                                Does your country directly controled any oversee colonies?
                                                     YES:
-                                                        Is german the predominant language in your nation?
-                                                            YES:Liechtenstein
-                                                            NO:Andorra
-                                                    NO:Switzerland
+                                                        Does your country have a Mediterraean coast?
+                                                            YES:
+                                                                Is your country nuclear armed?
+                                                                    YES:France
+                                                                    NO:Italy
+                                                            NO:
+                                                                Does your country share border with just one country?
+                                                                    YES:Portugal
+                                                                    NO:Germany
+                                                    NO:
+                                                        Is your country a member of NATO?
+                                                            YES:
+                                                                Does your country have mediterraean coast?
+                                                                    YES:Greece
+                                                                    NO:Finland
+                                                            NO:
+                                                                Is english the official language of your country?
+                                                                    YES:
+                                                                        Does your country share border with any other country?
+                                                                            YES:Ireland
+                                                                            NO:Malta
+                                                                    NO:
+                                                                        Is your country landlocked?
+                                                                            YES:Austria
+                                                                            NO:Cyprus
                                     NO:
-                                        Is your nation an island nation:
+                                        Is your country landlocked?
                                             YES:
-                                                Is your nation Nuclear armed?
-                                                    YES:United Kingdom
-                                                    NO:Iceland
+                                                Is your country entirely enclaved by a single other country?
+                                                    YES:
+                                                        Is your country the seat of Pope?
+                                                            YES:Vatican City
+                                                            NO:San Marino
+                                                    NO:
+                                                        Is your nation considered a micro-nation?
+                                                            YES:
+                                                                Is german the predominant language in your nation?
+                                                                    YES:Liechtenstein
+                                                                    NO:Andorra
+                                                            NO:Switzerland
                                             NO:
-                                                Is your nation considered a micro-nation?
-                                                    YES:Monaco
-                                                    NO:Norway
+                                                Is your nation an island nation:
+                                                    YES:
+                                                        Is your nation Nuclear armed?
+                                                            YES:United Kingdom
+                                                            NO:Iceland
+                                                    NO:
+                                                        Is your nation considered a micro-nation?
+                                                            YES:Monaco
+                                                            NO:Norway
                     NO:
                         Is your country a Caribbean Island nation?
                             YES:
