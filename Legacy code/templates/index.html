@@ -1,0 +1,69 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guess the Country Game</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        /* Add some margin-top to the navigation buttons container */
+        .navigation-buttons {
+            margin-top: 50px;
+        }
+        /* Styling for large buttons */
+        .btn-group-lg > .btn, .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.25rem;
+            line-height: 1.5;
+            border-radius: 0.3rem;
+        }
+        /* Add spacing between YES and NO buttons */
+        .btn-space {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+        /* Align the back and restart buttons */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+        /* Ensure the form and anchor tag only take up necessary space */
+        .navigation-buttons form,
+        .navigation-buttons a {
+            flex: none;
+        }
+        /* Align the Restart button to the right */
+        .navigation-buttons a {
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body class="container mt-5">
+    <div class="card mt-4">
+        <div class="card-body position-relative">
+            <!-- Display the current question -->
+            <h2 class="card-title text-center">{{ question }}</h2>
+            <!-- Form for YES and NO buttons -->
+            <form method="POST" class="text-center">
+                <div class="btn-group" role="group">
+                    <!-- YES button -->
+                    <button type="submit" name="answer" value="YES" class="btn btn-success btn-lg btn-space">YES</button>
+                    <!-- NO button -->
+                    <button type="submit" name="answer" value="NO" class="btn btn-danger btn-lg btn-space">NO</button>
+                </div>
+            </form>
+            <!-- Navigation buttons container -->
+            <div class="navigation-buttons">
+                <!-- Back button inside a form to submit POST request -->
+                <form method="POST">
+                    <button type="submit" name="answer" value="BACK" class="btn btn-secondary btn-lg">Back</button>
+                </form>
+                <!-- Restart button as an anchor link, aligned to the right -->
+                <a href="{{ url_for('restart') }}" class="btn btn-secondary btn-lg">Restart</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

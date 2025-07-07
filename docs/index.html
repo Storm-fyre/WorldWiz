@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guess the Country Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .screen { display: none; }
+        #home-screen { display: block; }
+        .btn-space { margin: 0 10px; }
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body class="container mt-5">
+
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen text-center">
+        <h1>Welcome to the Guess the Country Game</h1>
+        <p class="mt-3">Think of any country, and I will guess it by asking a few yes/no questions.</p>
+        <div class="mt-4">
+            <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div class="card mt-4">
+            <div class="card-body position-relative">
+                <h2 id="question-text" class="card-title text-center mb-4"></h2>
+                <div class="text-center">
+                    <button id="yes-btn" class="btn btn-success btn-lg btn-space">YES</button>
+                    <button id="no-btn" class="btn btn-danger btn-lg btn-space">NO</button>
+                </div>
+                <div class="navigation-buttons">
+                    <button id="game-back-btn" class="btn btn-secondary btn-lg">Back</button>
+                    <button id="game-restart-btn" class="btn btn-info btn-lg">Restart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen text-center">
+        <h1>Your country is: <span id="country-name" class="text-primary"></span></h1>
+        <div class="navigation-buttons justify-content-center">
+            <button id="result-back-btn" class="btn btn-secondary btn-lg mx-2">Back</button>
+            <button id="result-restart-btn" class="btn btn-primary btn-lg mx-2">Restart</button>
+        </div>
+    </div>
+    
+    <!-- Loading/Error Indicator -->
+    <div id="loading-screen" class="screen text-center">
+        <h2 id="loading-text">Loading Game...</h2>
+    </div>
+
+
+    <script>
+        // --- DOM Elements ---
+        const screens = { home: document.getElementById('home-screen'), game: document.getElementById('game-screen'), result: document.getElementById('result-screen'), loading: document.getElementById('loading-screen') };
+        const buttons = { start: document.getElementById('start-btn'), yes: document.getElementById('yes-btn'), no: document.getElementById('no-btn'), gameBack: document.getElementById('game-back-btn'), resultBack: document.getElementById('result-back-btn'), gameRestart: document.getElementById('game-restart-btn'), resultRestart: document.getElementById('result-restart-btn') };
+        const elements = { questionText: document.getElementById('question-text'), countryName: document.getElementById('country-name'), loadingText: document.getElementById('loading-text') };
+
+        // --- Game State ---
+        let mainRootNodes = [];
+        let miscRootNode = null;
+        let currentNode = null;
+        let currentRootIndex = 0;
+        let history = [];
+        let shuffledMainRoots = [];
+
+        // --- Core Logic ---
+
+        function parseTree(treeText) {
+            const lines = treeText.trim().split('\n');
+            if (lines.length === 0) return null;
+            const getDepth = (line) => (line.length - line.trimStart().length) / 4;
+            const root = { text: lines[0].trim(), yes: null, no: null };
+            const parentStack = [ { node: root, depth: 0 } ]; 
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                if (!line.trim()) continue;
+                const depth = getDepth(line);
+                const text = line.trim();
+
+                while (parentStack.length > 0 && parentStack[parentStack.length - 1].depth >= depth) {
+                    parentStack.pop();
+                }
+
+                const parent = parentStack[parentStack.length - 1].node;
+                let newNode = null;
+
+                if (text.startsWith("YES:")) {
+                    const content = text.substring(4).trim();
+                    if (content) {
+                        parent.yes = { text: content, yes: null, no: null };
+                    } else {
+                        const nextLine = lines[i + 1];
+                        const nextText = nextLine.trim();
+                        newNode = { text: nextText, yes: null, no: null };
+                        parent.yes = newNode;
+                        i++;
+                    }
+                } else if (text.startsWith("NO:")) {
+                    const content = text.substring(3).trim();
+                    if (content) {
+                        parent.no = { text: content, yes: null, no: null };
+                    } else {
+                        const nextLine = lines[i + 1];
+                        const nextText = nextLine.trim();
+                        newNode = { text: nextText, yes: null, no: null };
+                        parent.no = newNode;
+                        i++;
+                    }
+                }
+
+                if (newNode) {
+                    parentStack.push({ node: newNode, depth: getDepth(lines[i]) });
+                }
+            }
+            return root;
+        }
+        
+        function showScreen(screenName) {
+            Object.values(screens).forEach(s => s.style.display = 'none');
+            if (screens[screenName]) screens[screenName].style.display = 'block';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function startGame() {
+            history = [];
+            shuffledMainRoots = [...mainRootNodes];
+            shuffleArray(shuffledMainRoots);
+            currentRootIndex = 0;
+            currentNode = shuffledMainRoots[currentRootIndex];
+            displayCurrentNode();
+        }
+
+        function displayCurrentNode() {
+            if (!currentNode) {
+                showResult("Something went wrong! Let's restart.");
+                return;
+            }
+            if (!currentNode.yes && !currentNode.no) {
+                showResult(currentNode.text);
+            } else {
+                elements.questionText.textContent = currentNode.text;
+                showScreen('game');
+            }
+        }
+        
+        /**
+         * Handles the user's answer, now with special logic for tree progression.
+         */
+        function handleAnswer(answer) {
+            if (!currentNode) return;
+            
+            history.push(currentNode);
+            let nextNode = (answer === 'YES') ? currentNode.yes : currentNode.no;
+            
+            if (nextNode) {
+                currentNode = nextNode;
+            } else { // No direct path forward from this node.
+                if (answer === 'NO') {
+                    const isMainRoot = shuffledMainRoots.includes(currentNode);
+                    
+                    if (isMainRoot) {
+                        currentRootIndex++;
+                        if (currentRootIndex < shuffledMainRoots.length) {
+                            // Move to the next main tree in the shuffled list.
+                            currentNode = shuffledMainRoots[currentRootIndex];
+                        } else {
+                            // All main trees exhausted, switch to the fallback misc tree.
+                            currentNode = miscRootNode;
+                            if (!currentNode) { // Edge case if misc tree fails to load
+                                showResult("I give up! I'm out of ideas.");
+                                return;
+                            }
+                        }
+                    } else if (currentNode === miscRootNode) {
+                        // User said NO to the root of the final fallback tree. Game over.
+                        showResult("I give up! I couldn't guess your country.");
+                        return;
+                    } else {
+                        // It's a dead end within a tree branch.
+                        showResult(`I'm lost! The path from "${currentNode.text}" seems incomplete.`);
+                        return;
+                    }
+                } else { // Dead end on a "YES" answer.
+                     showResult(`I thought it was ${currentNode.text}, but I seem to be wrong.`);
+                     return;
+                }
+            }
+            displayCurrentNode();
+        }
+
+        function goBack() {
+            if (history.length === 0) {
+                restartGame();
+                return;
+            }
+            currentNode = history.pop();
+            const rootIndex = shuffledMainRoots.findIndex(root => root.text === currentNode.text);
+            if(rootIndex > -1) currentRootIndex = rootIndex;
+            displayCurrentNode();
+        }
+
+        function restartGame() {
+            history = [];
+            currentNode = null;
+            shuffledMainRoots = [];
+            showScreen('home');
+        }
+
+        function showResult(country) {
+            elements.countryName.textContent = country;
+            showScreen('result');
+        }
+        
+        buttons.start.addEventListener('click', startGame);
+        buttons.yes.addEventListener('click', () => handleAnswer('YES'));
+        buttons.no.addEventListener('click', () => handleAnswer('NO'));
+        buttons.gameBack.addEventListener('click', goBack);
+        buttons.resultBack.addEventListener('click', goBack);
+        buttons.gameRestart.addEventListener('click', restartGame);
+        buttons.resultRestart.addEventListener('click', restartGame);
+
+        /**
+         * Initializes the game by separating main trees from the misc tree.
+         */
+        async function initializeGame() {
+            showScreen('loading');
+            try {
+                const response = await fetch('decision.txt');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const text = await response.text();
+                const treeTexts = text.split('---TREE---').filter(t => t.trim());
+                if (treeTexts.length < 4) throw new Error("The data file must contain at least 4 trees.");
+
+                // The last tree is our fallback/misc tree.
+                const miscTreeText = treeTexts.pop();
+                miscRootNode = parseTree(miscTreeText);
+
+                // The first three are the main geographic trees.
+                mainRootNodes = treeTexts.map(parseTree).filter(t => t !== null);
+
+                if (mainRootNodes.length < 3 || !miscRootNode) throw new Error("Failed to parse the decision trees correctly.");
+                
+                showScreen('home');
+            } catch (error) {
+                console.error('Failed to load or parse tree data:', error);
+                elements.loadingText.textContent = `Error: ${error.message}`;
+                elements.loadingText.classList.add('text-danger');
+            }
+        }
+
+        window.addEventListener('load', initializeGame);
+    </script>
+</body>
+</html>
