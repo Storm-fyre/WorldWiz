@@ -26,6 +26,11 @@
                 font-size: 1.5rem; /* Even smaller for mobile devices */
             }
         }
+
+        /* Custom margin for the large gap */
+        .mb-extra-large {
+            margin-bottom: 4rem !important; /* Approximately 4 times the default mt-3/mt-4 */
+        }
     </style>
 </head>
 <body class="container mt-5">
@@ -33,8 +38,9 @@
     <!-- Home Screen -->
     <div id="home-screen" class="screen text-center">
         <h1>Welcome to 'I Know Your Country'!</h1>
-        <p class="mt-3">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
-        <div class="mt-8">
+        <!-- Increased gap below this paragraph -->
+        <p class="mt-3 mb-extra-large">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
+        <div class="mt-4">
             <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
         </div>
         <!-- Creator contact added below the start button -->
@@ -51,8 +57,9 @@
                     <button id="no-btn" class="btn btn-danger btn-lg btn-space">NO</button>
                 </div>
                 <div class="navigation-buttons">
-                    <button id="game-back-btn" class="btn btn-secondary btn-lg">Back</button>
-                    <button id="game-restart-btn" class="btn btn-info btn-lg">Restart</button>
+                    <!-- Buttons changed to btn-sm for smaller size -->
+                    <button id="game-back-btn" class="btn btn-secondary btn-sm">Back</button>
+                    <button id="game-restart-btn" class="btn btn-info btn-sm">Restart</button>
                 </div>
             </div>
         </div>
@@ -62,8 +69,9 @@
     <div id="result-screen" class="screen text-center">
         <h1>Your country is: <span id="country-name" class="text-primary"></span></h1>
         <div class="navigation-buttons justify-content-center">
-            <button id="result-back-btn" class="btn btn-secondary btn-lg mx-2">Back</button>
-            <button id="result-restart-btn" class="btn btn-primary btn-lg mx-2">Restart</button>
+            <!-- Buttons changed to btn-sm for smaller size -->
+            <button id="result-back-btn" class="btn btn-secondary btn-sm mx-2">Back</button>
+            <button id="result-restart-btn" class="btn btn-primary btn-sm mx-2">Restart</button>
         </div>
     </div>
     
@@ -233,29 +241,8 @@
             }
             currentNode = history.pop(); // Go back to the previous question
             
-            // Adjust currentTreeRoot and currentRootAttemptIndex if we are going back to a root question
-            // and that root is earlier in the sequence than our current `currentTreeRoot`.
-            // This is a more complex adjustment for 'Back' that might not be strictly necessary
-            // if history only tracks individual nodes. For simplicity, we assume `currentNode`
-            // will correctly point back to where it was.
-            // If going back *across* roots is required, this logic would need to store `currentRootAttemptIndex`
-            // in history as well. For now, it will just display the previous node, which could be a root of a prior tree.
-            
             // Re-evaluate currentTreeRoot and currentRootAttemptIndex based on the returned currentNode
-            // Find which root this currentNode belongs to.
             for (let i = 0; i < rootAttemptSequence.length; i++) {
-                // To accurately set currentTreeRoot, we would need to traverse from rootAttemptSequence[i]
-                // and see if currentNode is a descendant. This is complex for a simple `goBack`.
-                // A simpler approach for `goBack` is just to set `currentNode`.
-                // The `isAnsweringCurrentTreeRootQuestion` check in `handleAnswer` relies on `currentTreeRoot`
-                // being correct, so we need to set it properly after `goBack`.
-                
-                // For a more robust `goBack` when crossing tree boundaries:
-                // We'd need to store `currentRootAttemptIndex` in the history along with `currentNode`.
-                // For this example, let's keep it simpler. The `handleAnswer` logic relies on `currentTreeRoot`
-                // being the *active* tree. If `goBack` goes back to a previous tree's root, `currentTreeRoot`
-                // might not be reset correctly, but `isAnsweringCurrentTreeRootQuestion` for the *actual* root
-                // of the *current* tree will still function.
                 if (currentNode === rootAttemptSequence[i]) {
                     currentTreeRoot = rootAttemptSequence[i];
                     currentRootAttemptIndex = i;
