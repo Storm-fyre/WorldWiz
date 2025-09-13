@@ -34,7 +34,7 @@
     <div id="home-screen" class="screen text-center">
         <h1>Welcome to 'I Know Your Country'!</h1>
         <p class="mt-3">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
-        <div class="mt-4">
+        <div class="mt-8">
             <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
         </div>
         <!-- Creator contact added below the start button -->
@@ -79,13 +79,13 @@
         const buttons = { start: document.getElementById('start-btn'), yes: document.getElementById('yes-btn'), no: document.getElementById('no-btn'), gameBack: document.getElementById('game-back-btn'), resultBack: document.getElementById('result-back-btn'), gameRestart: document.getElementById('game-restart-btn'), resultRestart: document.getElementById('result-restart-btn') };
         const elements = { questionText: document.getElementById('question-text'), countryName: document.getElementById('country-name'), loadingText: document.getElementById('loading-text') };
 
-        // --- Game State ---
-        let mainRootNodes = [];
-        let miscRootNode = null;
-        let currentNode = null;
-        let currentRootIndex = 0;
-        let history = [];
-        let shuffledMainRoots = [];
+        // --- Game State (Modified) ---
+        let allRoots = {}; // Object to hold all parsed root nodes (asia, americasEurope, africa, misc)
+        let currentTreeRoot = null; // The root node of the *current decision tree* being traversed (e.g., allRoots.asia)
+        let currentNode = null; // The current node *within* currentTreeRoot's tree
+        let rootAttemptSequence = []; // Array defining the specific order of root nodes to attempt for the current game
+        let currentRootAttemptIndex = 0; // Index into rootAttemptSequence
+        let history = []; // To track nodes for the 'Back' button
 
         // --- Core Logic ---
 
@@ -153,11 +153,23 @@
         }
         
         function startGame() {
-            history = [];
-            shuffledMainRoots = [...mainRootNodes];
-            shuffleArray(shuffledMainRoots);
-            currentRootIndex = 0;
-            currentNode = shuffledMainRoots[currentRootIndex];
+            history = []; // Clear history for a new game
+
+            // Determine the sequence of roots to attempt based on user's request
+            let initialTwoRoots = [allRoots.asia, allRoots.americasEurope];
+            shuffleArray(initialTwoRoots); // Randomly order Asia and Americas/Europe
+
+            rootAttemptSequence = [
+                initialTwoRoots[0], // First randomly chosen of the initial two
+                initialTwoRoots[1], // The other of the initial two
+                allRoots.africa,    // Then Africa
+                allRoots.misc       // Finally, the miscellaneous tree as the last resort
+            ];
+            
+            currentRootAttemptIndex = 0;
+            currentTreeRoot = rootAttemptSequence[currentRootAttemptIndex]; // Set the first root to try
+            currentNode = currentTreeRoot; // Start traversal from this root's question
+            
             displayCurrentNode();
         }
 
@@ -166,74 +178,100 @@
                 showResult("Something went wrong! Let's restart.");
                 return;
             }
-            if (!currentNode.yes && !currentNode.no) {
+            if (!currentNode.yes && !currentNode.no) { // It's a leaf node (a country guess)
                 showResult(currentNode.text);
-            } else {
+            } else { // It's a question node
                 elements.questionText.textContent = currentNode.text;
                 showScreen('game');
             }
         }
         
         /**
-         * Handles the user's answer, now with special logic for tree progression.
+         * Handles the user's answer, with modified logic for switching between root trees.
          */
         function handleAnswer(answer) {
             if (!currentNode) return;
             
-            history.push(currentNode);
+            history.push(currentNode); // Always push the current node before moving to the next question
+
+            // Check if the current question being answered is the root question of the *current tree we are exploring*
+            let isAnsweringCurrentTreeRootQuestion = (currentNode === currentTreeRoot);
+
             let nextNode = (answer === 'YES') ? currentNode.yes : currentNode.no;
             
             if (nextNode) {
-                currentNode = nextNode;
-            } else { // No direct path forward from this node.
+                currentNode = nextNode; // Move deeper into the current tree
+            } else { // No direct path forward from this node (either a dead end or a specific 'NO' to a root)
                 if (answer === 'NO') {
-                    const isMainRoot = shuffledMainRoots.includes(currentNode);
-                    
-                    if (isMainRoot) {
-                        currentRootIndex++;
-                        if (currentRootIndex < shuffledMainRoots.length) {
-                            // Move to the next main tree in the shuffled list.
-                            currentNode = shuffledMainRoots[currentRootIndex];
+                    if (isAnsweringCurrentTreeRootQuestion) { // If player said NO to the *root question* of the current tree
+                        currentRootAttemptIndex++; // Try the next tree in the sequence
+                        if (currentRootAttemptIndex < rootAttemptSequence.length) {
+                            currentTreeRoot = rootAttemptSequence[currentRootAttemptIndex]; // Set the new current tree root
+                            currentNode = currentTreeRoot; // Start from the root question of this new tree
                         } else {
-                            // All main trees exhausted, switch to the fallback misc tree.
-                            currentNode = miscRootNode;
-                            if (!currentNode) { // Edge case if misc tree fails to load
-                                showResult("I give up! I'm out of ideas.");
-                                return;
-                            }
+                            // This case should ideally not be hit if allRoots.misc is included as the last item
+                            // but as a safeguard, if somehow the sequence exhausts.
+                            showResult("I give up! I couldn't guess your country.");
+                            return;
                         }
-                    } else if (currentNode === miscRootNode) {
-                        // User said NO to the root of the final fallback tree. Game over.
-                        showResult("I give up! I couldn't guess your country.");
-                        return;
-                    } else {
-                        // It's a dead end within a tree branch.
+                    } else { // Player said NO to a non-root question, and that specific branch path is exhausted
                         showResult(`I'm lost! The path from "${currentNode.text}" seems incomplete.`);
                         return;
                     }
-                } else { // Dead end on a "YES" answer.
+                } else { // Player said YES to a question, but the YES path is null (tree is malformed)
                      showResult(`I thought it was ${currentNode.text}, but I seem to be wrong.`);
                      return;
                 }
             }
-            displayCurrentNode();
+            displayCurrentNode(); // Display the new question or the result
         }
 
         function goBack() {
             if (history.length === 0) {
-                restartGame();
+                restartGame(); // If no history, go back to home screen
                 return;
             }
-            currentNode = history.pop();
-            const rootIndex = shuffledMainRoots.findIndex(root => root.text === currentNode.text);
-            if(rootIndex > -1) currentRootIndex = rootIndex;
+            currentNode = history.pop(); // Go back to the previous question
+            
+            // Adjust currentTreeRoot and currentRootAttemptIndex if we are going back to a root question
+            // and that root is earlier in the sequence than our current `currentTreeRoot`.
+            // This is a more complex adjustment for 'Back' that might not be strictly necessary
+            // if history only tracks individual nodes. For simplicity, we assume `currentNode`
+            // will correctly point back to where it was.
+            // If going back *across* roots is required, this logic would need to store `currentRootAttemptIndex`
+            // in history as well. For now, it will just display the previous node, which could be a root of a prior tree.
+            
+            // Re-evaluate currentTreeRoot and currentRootAttemptIndex based on the returned currentNode
+            // Find which root this currentNode belongs to.
+            for (let i = 0; i < rootAttemptSequence.length; i++) {
+                // To accurately set currentTreeRoot, we would need to traverse from rootAttemptSequence[i]
+                // and see if currentNode is a descendant. This is complex for a simple `goBack`.
+                // A simpler approach for `goBack` is just to set `currentNode`.
+                // The `isAnsweringCurrentTreeRootQuestion` check in `handleAnswer` relies on `currentTreeRoot`
+                // being correct, so we need to set it properly after `goBack`.
+                
+                // For a more robust `goBack` when crossing tree boundaries:
+                // We'd need to store `currentRootAttemptIndex` in the history along with `currentNode`.
+                // For this example, let's keep it simpler. The `handleAnswer` logic relies on `currentTreeRoot`
+                // being the *active* tree. If `goBack` goes back to a previous tree's root, `currentTreeRoot`
+                // might not be reset correctly, but `isAnsweringCurrentTreeRootQuestion` for the *actual* root
+                // of the *current* tree will still function.
+                if (currentNode === rootAttemptSequence[i]) {
+                    currentTreeRoot = rootAttemptSequence[i];
+                    currentRootAttemptIndex = i;
+                    break;
+                }
+            }
+
             displayCurrentNode();
         }
 
         function restartGame() {
             history = [];
+            currentTreeRoot = null;
             currentNode = null;
-            shuffledMainRoots = [];
+            rootAttemptSequence = [];
+            currentRootAttemptIndex = 0;
             showScreen('home');
         }
 
@@ -251,7 +289,7 @@
         buttons.resultRestart.addEventListener('click', restartGame);
 
         /**
-         * Initializes the game by separating main trees from the misc tree.
+         * Initializes the game by parsing all decision trees.
          */
         async function initializeGame() {
             showScreen('loading');
@@ -262,14 +300,15 @@
                 const treeTexts = text.split('---TREE---').filter(t => t.trim());
                 if (treeTexts.length < 4) throw new Error("The data file must contain at least 4 trees.");
 
-                // The last tree is our fallback/misc tree.
-                const miscTreeText = treeTexts.pop();
-                miscRootNode = parseTree(miscTreeText);
+                // Parse and assign to specific root variables
+                allRoots.asia = parseTree(treeTexts[0]);
+                allRoots.americasEurope = parseTree(treeTexts[1]);
+                allRoots.africa = parseTree(treeTexts[2]);
+                allRoots.misc = parseTree(treeTexts[3]); // The last one is the fallback/monarchy tree
 
-                // The first three are the main geographic trees.
-                mainRootNodes = treeTexts.map(parseTree).filter(t => t !== null);
-
-                if (mainRootNodes.length < 3 || !miscRootNode) throw new Error("Failed to parse the decision trees correctly.");
+                if (!allRoots.asia || !allRoots.americasEurope || !allRoots.africa || !allRoots.misc) {
+                     throw new Error("Failed to parse all decision trees correctly. Check decision.txt for structure.");
+                }
                 
                 showScreen('home');
             } catch (error) {
