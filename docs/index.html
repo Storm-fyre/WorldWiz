@@ -8,14 +8,9 @@
     <style>
         body {
             background-color: #f8f9fa;
-            min-height: 100vh; /* Ensure body takes full viewport height */
-            display: flex;
-            flex-direction: column; /* Stack children vertically */
-            margin: 0; /* Reset default body margin */
-            padding: 0; /* Reset default body padding */
         }
         .screen { display: none; }
-        #home-screen { display: block; } /* This will be styled further below */
+        #home-screen { display: block; }
         .btn-space { margin: 0 10px; }
         .navigation-buttons {
             display: flex;
@@ -24,116 +19,67 @@
         }
         /* Custom styles for question text to make it less imposing */
         #question-text {
-            font-size: 2rem;
+            font-size: 2rem; /* A bit smaller than default h2 for larger screens */
         }
-        @media (max-width: 767.98px) {
+        @media (max-width: 767.98px) { /* Applies to screens smaller than 768px (common mobile breakpoint) */
             #question-text {
-                font-size: 1.5rem;
+                font-size: 1.5rem; /* Even smaller for mobile devices */
             }
         }
 
-        /* --- New/Modified Styles for Home Screen Layout --- */
-        .main-content-wrapper {
-            flex-grow: 1; /* Allows this wrapper to take all available height */
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Vertically center the content within the wrapper */
-            align-items: center; /* Horizontally center the content within the wrapper */
-            width: 100%; /* Take full width */
-            padding: 1rem; /* Add some padding around the main content */
-            box-sizing: border-box; /* Include padding in width/height calculations */
-        }
-
-        #home-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Horizontally center its direct children */
-            text-align: center; /* Ensure text is centered */
-            /* Bootstrap container already provides max-width, no need to set here */
-            /* Add some padding to home screen content itself */
-            padding: 2rem 1rem; 
-            box-sizing: border-box;
-        }
-
-        /* Flexible spacer to push the button down */
-        .flex-fill-space {
-            flex-grow: 1; /* This element will take up all available space */
-            width: 100%; /* Ensures it properly expands within the flex column */
-        }
-
-        /* Adjust button sizes for Game and Result screens by overriding btn-lg with btn-sm styles */
-        #game-screen .navigation-buttons button,
-        #result-screen .navigation-buttons button {
-            /* These properties mimic Bootstrap's .btn-sm styles */
-            font-size: 0.875rem !important; /* Smaller font */
-            padding: .25rem .5rem !important; /* Smaller padding */
-            line-height: 1.5 !important;
-            border-radius: .2rem !important;
-        }
-
-        /* General spacing adjustments for home-screen elements for a cleaner look */
-        #home-screen h1 { margin-bottom: 1.5rem !important; }
-        #home-screen p.mt-3 { margin-bottom: 0 !important; } /* Remove bottom margin from description */
-        #home-screen > div:has(button#start-btn) { /* Target the div containing the start button */
-            margin-top: 0 !important; /* Ensure no unwanted top margin */
-            margin-bottom: 0 !important; /* Ensure no unwanted bottom margin */
-        }
-        #home-screen > p.mt-4 { /* Target the contact info paragraph */
-            margin-top: 1.5rem !important; /* Explicitly set the 1.5rem gap */
-            margin-bottom: 0 !important; /* Remove any default bottom margin */
+        /* Custom margin for the large gap */
+        .mb-extra-large {
+            margin-bottom: 6rem !important; /* Approximately 4 times the default mt-3/mt-4 */
         }
     </style>
 </head>
-<body>
-    <div class="main-content-wrapper container"> <!-- New wrapper for main content, uses Bootstrap container -->
+<body class="container mt-5">
 
-        <!-- Home Screen -->
-        <div id="home-screen" class="screen text-center">
-            <h1>Welcome to 'I Know Your Country'!</h1>
-            <p class="mt-3">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
-            
-            <div class="flex-fill-space"></div> <!-- Flexible spacer for above the button -->
-
-            <div> <!-- Wrapper for the start button -->
-                <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
-            </div>
-            
-            <p class="mt-4">Creator contact: rakshann.t@gmail.com</p>
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen text-center">
+        <h1>Welcome to 'I Know Your Country'!</h1>
+        <!-- Increased gap below this paragraph -->
+        <p class="mt-3 mb-extra-large">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
+        <div class="mt-4">
+            <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
         </div>
+        <!-- Creator contact added below the start button -->
+        <p class="mt-4">Creator contact: rakshann.t@gmail.com</p>
+    </div>
 
-        <!-- Game Screen -->
-        <div id="game-screen" class="screen">
-            <div class="card mt-4">
-                <div class="card-body position-relative">
-                    <h2 id="question-text" class="card-title text-center mb-4"></h2>
-                    <div class="text-center">
-                        <button id="yes-btn" class="btn btn-success btn-lg btn-space">YES</button>
-                        <button id="no-btn" class="btn btn-danger btn-lg btn-space">NO</button>
-                    </div>
-                    <div class="navigation-buttons">
-                        <!-- Buttons changed to btn-sm for smaller size -->
-                        <button id="game-back-btn" class="btn btn-secondary btn-sm">Back</button>
-                        <button id="game-restart-btn" class="btn btn-info btn-sm">Restart</button>
-                    </div>
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div class="card mt-4">
+            <div class="card-body position-relative">
+                <h2 id="question-text" class="card-title text-center mb-4"></h2>
+                <div class="text-center">
+                    <button id="yes-btn" class="btn btn-success btn-lg btn-space">YES</button>
+                    <button id="no-btn" class="btn btn-danger btn-lg btn-space">NO</button>
+                </div>
+                <div class="navigation-buttons">
+                    <!-- Buttons changed to btn-sm for smaller size -->
+                    <button id="game-back-btn" class="btn btn-secondary btn-sm">Back</button>
+                    <button id="game-restart-btn" class="btn btn-info btn-sm">Restart</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Result Screen -->
-        <div id="result-screen" class="screen text-center">
-            <h1>Your country is: <span id="country-name" class="text-primary"></span></h1>
-            <div class="navigation-buttons justify-content-center">
-                <!-- Buttons changed to btn-sm for smaller size -->
-                <button id="result-back-btn" class="btn btn-secondary btn-sm mx-2">Back</button>
-                <button id="result-restart-btn" class="btn btn-primary btn-sm mx-2">Restart</button>
-            </div>
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen text-center">
+        <h1>Your country is: <span id="country-name" class="text-primary"></span></h1>
+        <div class="navigation-buttons justify-content-center">
+            <!-- Buttons changed to btn-sm for smaller size -->
+            <button id="result-back-btn" class="btn btn-secondary btn-sm mx-2">Back</button>
+            <button id="result-restart-btn" class="btn btn-primary btn-sm mx-2">Restart</button>
         </div>
-        
-        <!-- Loading/Error Indicator -->
-        <div id="loading-screen" class="screen text-center">
-            <h2 id="loading-text">Loading Game...</h2>
-        </div>
-    </div> <!-- End main-content-wrapper -->
+    </div>
+    
+    <!-- Loading/Error Indicator -->
+    <div id="loading-screen" class="screen text-center">
+        <h2 id="loading-text">Loading Game...</h2>
+    </div>
+
 
     <script>
         // --- DOM Elements ---
