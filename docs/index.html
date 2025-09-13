@@ -17,6 +17,15 @@
             justify-content: space-between;
             margin-top: 50px;
         }
+        /* Custom styles for question text to make it less imposing */
+        #question-text {
+            font-size: 2rem; /* A bit smaller than default h2 for larger screens */
+        }
+        @media (max-width: 767.98px) { /* Applies to screens smaller than 768px (common mobile breakpoint) */
+            #question-text {
+                font-size: 1.5rem; /* Even smaller for mobile devices */
+            }
+        }
     </style>
 </head>
 <body class="container mt-5">
@@ -28,6 +37,7 @@
         <div class="mt-4">
             <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
         </div>
+        <!-- Creator contact added below the start button -->
         <p class="mt-4">Creator contact: rakshann.t@gmail.com</p>
     </div>
 
@@ -272,6 +282,4 @@
         window.addEventListener('load', initializeGame);
     </script>
 </body>
-
 </html>
-
