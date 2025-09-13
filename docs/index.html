@@ -6,45 +6,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <style>
+        /* Essential for full height layouts */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
             background-color: #f8f9fa;
+            display: flex; /* Make body a flex container */
+            flex-direction: column; /* Stack its direct children vertically */
         }
-        .screen { display: none; }
-        #home-screen { display: block; }
+        .container {
+            flex-grow: 1; /* Allow the container to fill available vertical space */
+            position: relative; /* Essential for absolute positioning of screens */
+            padding: 0 15px; /* Restore Bootstrap's horizontal padding for containers */
+            max-width: 100%; /* Override default max-width for better responsiveness if needed */
+            margin: 0 auto; /* Center the container horizontally */
+        }
+
+        /* Styles for all screen containers to enable stacking and full height */
+        .screen {
+            display: none; /* Hidden by default */
+            position: absolute; /* Stack screens on top of each other */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Take full height of .container */
+            box-sizing: border-box; /* Include padding in height/width */
+            padding: 1rem; /* Add some internal padding to all screens for content */
+            text-align: center; /* Default horizontal centering for content */
+        }
+        #home-screen { display: block; } /* Home screen visible by default */
+        
+        /* General button spacing */
         .btn-space { margin: 0 10px; }
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
             margin-top: 50px;
         }
-        /* Custom styles for question text to make it less imposing */
+
+        /* Custom styles for question text to make it less imposing on mobile */
         #question-text {
-            font-size: 2rem; /* A bit smaller than default h2 for larger screens */
+            font-size: 2rem;
         }
-        @media (max-width: 767.98px) { /* Applies to screens smaller than 768px (common mobile breakpoint) */
+        @media (max-width: 767.98px) {
             #question-text {
-                font-size: 1.5rem; /* Even smaller for mobile devices */
+                font-size: 1.5rem;
             }
         }
 
-        /* Custom margin for the large gap */
-        .mb-extra-large {
-            margin-bottom: 4rem !important; /* Approximately 4 times the default mt-3/mt-4 */
+        /* --- NEW HOME SCREEN LAYOUT --- */
+        #home-screen.screen { /* When home-screen is active, apply flex styles */
+            display: flex; /* Make home-screen a flex container */
+            flex-direction: column; /* Stack its children vertically */
+            align-items: center; /* Horizontally center all children within home-screen */
         }
+
+        #home-screen h1 {
+            margin-top: 0; /* Reset default h1 margin-top */
+            margin-bottom: 1.5rem; /* Custom gap below title */
+        }
+        /* Description paragraph */
+        #home-screen p.description-text {
+            margin-top: 0; /* Reset default p margin-top */
+            margin-bottom: 0; /* Reset default p margin-bottom; the flexible-spacer handles the large gap */
+        }
+
+        /* This spacer takes up all available vertical space, pushing content below it */
+        .flexible-spacer {
+            flex-grow: 1; 
+            min-height: 2rem; /* Ensures a minimum gap even on very small screens */
+        }
+
+        /* Group for the Start button and contact info */
+        .start-button-and-contact-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Horizontally center button and contact info */
+        }
+        /* Contact info specific styling for the fixed gap below the button */
+        .start-button-and-contact-group .contact-info {
+            margin-top: 1.5rem; /* Exactly 1.5rem gap below the button (equivalent to Bootstrap mt-4) */
+            margin-bottom: 0; /* Reset default paragraph margin-bottom */
+        }
+        /* --- END NEW HOME SCREEN LAYOUT --- */
     </style>
 </head>
-<body class="container mt-5">
+<body class="container">
 
     <!-- Home Screen -->
-    <div id="home-screen" class="screen text-center">
+    <div id="home-screen" class="screen">
         <h1>Welcome to 'I Know Your Country'!</h1>
-        <!-- Increased gap below this paragraph -->
-        <p class="mt-3 mb-extra-large">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
-        <div class="mt-4">
+        <p class="description-text">Think of any country, and I will guess it by asking fewer than 9 yes/no questions.</p>
+        
+        <div class="flexible-spacer"></div> <!-- This spacer pushes the button group towards the center -->
+
+        <div class="start-button-and-contact-group">
             <button id="start-btn" class="btn btn-primary btn-lg">Start Game</button>
+            <p class="contact-info">Creator contact: rakshann.t@gmail.com</p>
         </div>
-        <!-- Creator contact added below the start button -->
-        <p class="mt-4">Creator contact: rakshann.t@gmail.com</p>
     </div>
 
     <!-- Game Screen -->
@@ -66,7 +127,7 @@
     </div>
 
     <!-- Result Screen -->
-    <div id="result-screen" class="screen text-center">
+    <div id="result-screen" class="screen">
         <h1>Your country is: <span id="country-name" class="text-primary"></span></h1>
         <div class="navigation-buttons justify-content-center">
             <!-- Buttons changed to btn-sm for smaller size -->
@@ -76,7 +137,7 @@
     </div>
     
     <!-- Loading/Error Indicator -->
-    <div id="loading-screen" class="screen text-center">
+    <div id="loading-screen" class="screen">
         <h2 id="loading-text">Loading Game...</h2>
     </div>
 
@@ -150,7 +211,7 @@
         
         function showScreen(screenName) {
             Object.values(screens).forEach(s => s.style.display = 'none');
-            if (screens[screenName]) screens[screenName].style.display = 'block';
+            if (screens[screenName]) screens[screenName].style.display = 'flex'; // Changed to flex for home-screen layout
         }
 
         function shuffleArray(array) {
@@ -243,13 +304,13 @@
             
             // Re-evaluate currentTreeRoot and currentRootAttemptIndex based on the returned currentNode
             for (let i = 0; i < rootAttemptSequence.length; i++) {
+                // If the node we are going back to is a root of one of our main trees, set it as currentTreeRoot
                 if (currentNode === rootAttemptSequence[i]) {
                     currentTreeRoot = rootAttemptSequence[i];
                     currentRootAttemptIndex = i;
                     break;
                 }
             }
-
             displayCurrentNode();
         }
 
